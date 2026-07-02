@@ -1,2 +1,2965 @@
-# wilsonchirwa
-all people want to learn about ICT program am hear 
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>School Management System Pro</title>
+
+<style>
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:Arial,sans-serif;
+}
+
+body{
+background:#f2f2f2;
+}
+
+header{
+background:#0A64AD;
+color:white;
+padding:15px;
+text-align:center;
+display:none;
+}
+
+#sidebar{
+position:fixed;
+left:0;
+top:60px;
+width:220px;
+height:100%;
+background:#222;
+display:none;
+overflow:auto;
+}
+
+#sidebar button{
+width:100%;
+padding:15px;
+border:none;
+background:none;
+color:white;
+text-align:left;
+cursor:pointer;
+border-bottom:1px solid #444;
+}
+
+#sidebar button:hover{
+background:#0A64AD;
+}
+
+main{
+margin-left:230px;
+padding:20px;
+}
+
+.page{
+display:none;
+}
+
+.page.active{
+display:block;
+}
+
+.card{
+background:white;
+padding:15px;
+margin-bottom:15px;
+border-radius:8px;
+box-shadow:0 2px 6px rgba(0,0,0,.2);
+}
+
+input,
+select,
+textarea{
+width:100%;
+padding:10px;
+margin:6px 0;
+}
+
+button{
+padding:10px 15px;
+cursor:pointer;
+}
+
+.action-btn{
+background:#0A64AD;
+color:white;
+border:none;
+border-radius:5px;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:10px;
+}
+
+table th,
+table td{
+border:1px solid #ccc;
+padding:8px;
+text-align:left;
+}
+
+.modal{
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.5);
+}
+
+.box{
+  background:white;
+  width:300px;
+  margin:100px auto;
+  padding:20px;
+  border-radius:10px;
+}
+
+</style>
+<style>
+.modal{
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.6);
+}
+
+.box{
+  background:white;
+  width:320px;
+  margin:120px auto;
+  padding:20px;
+  border-radius:12px;
+  text-align:center;
+}
+
+input{
+  width:90%;
+  padding:10px;
+  margin:8px 0;
+}
+button{
+  padding:10px;
+  margin:5px;
+}
+#status{
+  margin-top:10px;
+  color:green;
+}
+</style>
+</head>
+
+<body>
+
+<header id="header">
+<h2>🏫 School Management System Pro</h2>
+</header>
+
+<div id="sidebar">
+
+<button onclick="showPage('dashboard')">🏠 Home</button>
+
+<button onclick="showPage('students')">👨‍🎓 Students</button>
+
+<button onclick="showPage('teachers')">👨‍🏫 Teachers</button>
+
+<button onclick="showPage('results')">📊 Results</button>
+<button class="action-btn"
+style="background:red;"
+onclick="factoryReset()">
+🗑 Factory Reset
+</button>
+<button onclick="showPage('fees')">💰 Fees</button>
+<button onclick="showPage('backup')">💾 Backup & Restore</button>
+<button onclick="showPage('adminPanel')">
+⚙️ Admin Panel
+</button>
+<button onclick="showPage('library')">📚 Library</button>
+<button onclick="openForm('airtel')">Airtel Money</button>
+<button onclick="openForm('tnm')">TNM Mpamba</button>
+
+<button onclick="showPage('attendance')">📝 Attendance</button>
+
+<button onclick="showPage('alerts')">🔔 Alerts</button>
+
+<button onclick="showPage('documents')">📁 Documents</button>
+<button onclick="showPage('admin')">📊 Admin Dashboard</button>
+<button onclick="showPage('profile')">👤 Profile</button>
+<button onclick="showPage('settings')">
+⚙️ School Settings
+</button>
+<button onclick="showPage('reports')">
+📄 Report Cards
+</button>
+<button onclick="showPage('timetable')">
+🗓️ Timetable
+</button>
+<button onclick="showPage('messages')">
+📩 Messages
+</button>
+<button onclick="logoutUser()">🚪 Logout</button>
+
+</div>
+
+<main>
+<!-- LOGIN PAGE -->
+<div id="login" class="page active">
+
+<div class="card">
+
+<h2>🔐 Login</h2>
+
+<input type="text" id="username" placeholder="Username">
+
+<input type="password" id="password" placeholder="Password">
+
+<button class="action-btn" onclick="loginUser()">
+Login
+</button>
+
+<p id="loginMessage"></p>
+
+</div>
+
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard" class="page">
+
+<div class="card">
+
+<h2>🏠 Dashboard</h2>
+
+<p>Welcome to School Management System.</p>
+
+<p>Total Students:
+<b id="studentCount">0</b></p>
+
+<p>Total Teachers:
+<b id="teacherCount">0</b></p>
+
+<p>Total Results:
+<b id="resultCount">0</b></p>
+
+</div>
+<div id="modal" class="modal">
+  <div class="box">
+    <h2 id="title">Payment</h2>
+
+    <input type="text" id="phone" placeholder="Phone Number">
+    <input type="number" id="amount" placeholder="Amount">
+
+    <button onclick="sendMoney()">Send</button>
+    <button onclick="closeForm()">Close</button>
+
+    <p id="status"></p>
+  </div>
+</div>
+</div>
+
+<script>
+
+function openAirtel(){
+  document.getElementById("airtelForm").style.display = "block";
+}
+
+function closeAirtel(){
+  document.getElementById("airtelForm").style.display = "none";
+}
+
+function openTNM(){
+  document.getElementById("tnmForm").style.display = "block";
+}
+
+function closeTNM(){
+  document.getElementById("tnmForm").style.display = "none";
+}
+
+function showPage(id){
+
+document.querySelectorAll(".page").forEach(function(page){
+
+page.classList.remove("active");
+
+});
+
+document.getElementById(id).classList.add("active");
+
+}
+
+function loginUser(){
+
+let username=document.getElementById("username").value.trim();
+
+let password=document.getElementById("password").value.trim();
+
+if(username==="admin" && password==="1234"){
+
+document.getElementById("loginMessage").innerHTML="<span style='color:green'>Login Successful</span>";
+
+document.getElementById("header").style.display="block";
+
+document.getElementById("sidebar").style.display="block";
+
+showPage("dashboard");
+
+}else{
+
+document.getElementById("loginMessage").innerHTML="<span style='color:red'>Wrong Username or Password</span>";
+
+}
+
+}
+
+function logoutUser(){
+
+document.getElementById("header").style.display="none";
+
+document.getElementById("sidebar").style.display="none";
+
+document.getElementById("username").value="";
+
+document.getElementById("password").value="";
+
+showPage("login");
+
+}
+
+</script>
+<script>
+let currentType = "";
+
+function openForm(type){
+  currentType = type;
+
+  document.getElementById("modal").style.display = "block";
+
+  if(type === "airtel"){
+    document.getElementById("title").innerText = "Airtel Money";
+  } else {
+    document.getElementById("title").innerText = "TNM Mpamba";
+  }
+}
+
+function closeForm(){
+  document.getElementById("modal").style.display = "none";
+  document.getElementById("status").innerText = "";
+}
+
+function sendMoney(){
+  let phone = document.getElementById("phone").value;
+  let amount = document.getElementById("amount").value;
+
+  if(phone === "" || amount === ""){
+    document.getElementById("status").innerText = "Fill all fields!";
+    document.getElementById("status").style.color = "red";
+    return;
+  }
+
+  document.getElementById("status").style.color = "green";
+  document.getElementById("status").innerText =
+    currentType.toUpperCase() + " payment of " + amount + " is processing...";
+
+  setTimeout(() => {
+    document.getElementById("status").innerText =
+      "✅ Payment Successful!";
+  }, 2000);
+}
+</script>
+<!-- ================= PART 3 ================= -->
+
+<div id="students" class="page">
+
+<div class="card">
+
+<h2>👨‍🎓 Student Management</h2>
+
+<input type="text" id="studentId" placeholder="Student ID">
+
+<input type="text" id="studentName" placeholder="Student Name">
+
+<input type="text" id="studentClass" placeholder="Class">
+
+<button class="action-btn" onclick="saveStudent()">
+💾 Save Student
+</button>
+
+<hr>
+
+<input type="text"
+id="studentSearch"
+placeholder="Search Student..."
+onkeyup="searchStudents()">
+
+<table>
+
+<thead>
+
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Class</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="studentTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+function saveStudent(){
+
+let id=document.getElementById("studentId").value.trim();
+let name=document.getElementById("studentName").value.trim();
+let cls=document.getElementById("studentClass").value.trim();
+
+if(id==""||name==""||cls==""){
+alert("Fill all fields");
+return;
+}
+
+let students=JSON.parse(localStorage.getItem("students")||"[]");
+
+students.push({
+id:id,
+name:name,
+class:cls
+});
+
+localStorage.setItem("students",JSON.stringify(students));
+
+loadStudents();
+
+document.getElementById("studentId").value="";
+document.getElementById("studentName").value="";
+document.getElementById("studentClass").value="";
+
+}
+
+function loadStudents(){
+
+let students=JSON.parse(localStorage.getItem("students")||"[]");
+
+let table=document.getElementById("studentTable");
+
+table.innerHTML="";
+
+students.forEach(function(s,index){
+
+table.innerHTML+=`
+<tr>
+<td>${s.id}</td>
+<td>${s.name}</td>
+<td>${s.class}</td>
+<td>
+<button onclick="editStudent(${index})">Edit</button>
+<button onclick="deleteStudent(${index})">Delete</button>
+</td>
+</tr>
+`;
+
+});
+
+document.getElementById("studentCount").innerHTML=students.length;
+
+}
+
+function editStudent(index){
+
+let students=JSON.parse(localStorage.getItem("students")||"[]");
+
+let s=students[index];
+
+document.getElementById("studentId").value=s.id;
+document.getElementById("studentName").value=s.name;
+document.getElementById("studentClass").value=s.class;
+
+students.splice(index,1);
+
+localStorage.setItem("students",JSON.stringify(students));
+
+loadStudents();
+
+}
+
+function deleteStudent(index){
+
+let students=JSON.parse(localStorage.getItem("students")||"[]");
+
+students.splice(index,1);
+
+localStorage.setItem("students",JSON.stringify(students));
+
+loadStudents();
+
+}
+
+function searchStudents(){
+
+let keyword=document.getElementById("studentSearch").value.toLowerCase();
+
+document.querySelectorAll("#studentTable tr").forEach(function(row){
+
+row.style.display=row.innerText.toLowerCase().includes(keyword)
+? ""
+: "none";
+
+});
+
+}
+
+window.addEventListener("load",loadStudents);
+
+</script>
+
+<!-- ================= END PART 3 ================= -->
+<!-- ================= PART 4 ================= -->
+
+<div id="teachers" class="page">
+
+<div class="card">
+
+<h2>👨‍🏫 Teacher Management</h2>
+
+<input type="text" id="teacherId" placeholder="Teacher ID">
+
+<input type="text" id="teacherName" placeholder="Teacher Name">
+
+<input type="text" id="teacherSubject" placeholder="Subject">
+
+<button class="action-btn" onclick="saveTeacher()">
+💾 Save Teacher
+</button>
+
+<hr>
+
+<input type="text"
+id="teacherSearch"
+placeholder="Search Teacher..."
+onkeyup="searchTeachers()">
+
+<table>
+
+<thead>
+
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Subject</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="teacherTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+function saveTeacher(){
+
+let id=document.getElementById("teacherId").value.trim();
+let name=document.getElementById("teacherName").value.trim();
+let subject=document.getElementById("teacherSubject").value.trim();
+
+if(id==""||name==""||subject==""){
+alert("Fill all fields");
+return;
+}
+
+let teachers=JSON.parse(localStorage.getItem("teachers")||"[]");
+
+teachers.push({
+id:id,
+name:name,
+subject:subject
+});
+
+localStorage.setItem("teachers",JSON.stringify(teachers));
+
+loadTeachers();
+
+document.getElementById("teacherId").value="";
+document.getElementById("teacherName").value="";
+document.getElementById("teacherSubject").value="";
+
+}
+
+function loadTeachers(){
+
+let teachers=JSON.parse(localStorage.getItem("teachers")||"[]");
+
+let table=document.getElementById("teacherTable");
+
+table.innerHTML="";
+
+teachers.forEach(function(t,index){
+
+table.innerHTML+=`
+<tr>
+<td>${t.id}</td>
+<td>${t.name}</td>
+<td>${t.subject}</td>
+<td>
+<button onclick="editTeacher(${index})">Edit</button>
+<button onclick="deleteTeacher(${index})">Delete</button>
+</td>
+</tr>
+`;
+
+});
+
+document.getElementById("teacherCount").innerHTML=teachers.length;
+
+}
+
+function editTeacher(index){
+
+let teachers=JSON.parse(localStorage.getItem("teachers")||"[]");
+
+let t=teachers[index];
+
+document.getElementById("teacherId").value=t.id;
+document.getElementById("teacherName").value=t.name;
+document.getElementById("teacherSubject").value=t.subject;
+
+teachers.splice(index,1);
+
+localStorage.setItem("teachers",JSON.stringify(teachers));
+
+loadTeachers();
+
+}
+
+function deleteTeacher(index){
+
+let teachers=JSON.parse(localStorage.getItem("teachers")||"[]");
+
+teachers.splice(index,1);
+
+localStorage.setItem("teachers",JSON.stringify(teachers));
+
+loadTeachers();
+
+}
+
+function searchTeachers(){
+
+let keyword=document.getElementById("teacherSearch").value.toLowerCase();
+
+document.querySelectorAll("#teacherTable tr").forEach(function(row){
+
+row.style.display=row.innerText.toLowerCase().includes(keyword)
+? ""
+: "none";
+
+});
+
+}
+
+window.addEventListener("load",loadTeachers);
+
+</script>
+
+<!-- ================= END PART 4 ================= -->
+<!-- ================= PART 5 ================= -->
+
+<div id="results" class="page">
+
+<div class="card">
+
+<h2>📊 Student Results</h2>
+
+<input type="text" id="resultStudentId" placeholder="Student ID">
+
+<input type="text" id="resultStudentName" placeholder="Student Name">
+
+<input type="text" id="resultSubject" placeholder="Subject">
+
+<input type="number" id="resultMarks" placeholder="Marks">
+
+<button class="action-btn" onclick="saveResult()">
+💾 Save Result
+</button>
+
+<hr>
+
+<input type="text"
+id="resultSearch"
+placeholder="Search Result..."
+onkeyup="searchResults()">
+
+<table>
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Subject</th>
+<th>Marks</th>
+<th>Grade</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="resultTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+function grade(mark){
+
+mark=Number(mark);
+
+if(mark>=80) return "A";
+if(mark>=70) return "B";
+if(mark>=60) return "C";
+if(mark>=50) return "D";
+return "F";
+
+}
+
+function saveResult(){
+
+let id=document.getElementById("resultStudentId").value.trim();
+let name=document.getElementById("resultStudentName").value.trim();
+let subject=document.getElementById("resultSubject").value.trim();
+let marks=document.getElementById("resultMarks").value;
+
+if(id==""||name==""||subject==""||marks==""){
+alert("Fill all fields");
+return;
+}
+
+let results=JSON.parse(localStorage.getItem("results")||"[]");
+
+results.push({
+id:id,
+name:name,
+subject:subject,
+marks:marks,
+grade:grade(marks)
+});
+
+localStorage.setItem("results",JSON.stringify(results));
+
+loadResults();
+
+document.getElementById("resultStudentId").value="";
+document.getElementById("resultStudentName").value="";
+document.getElementById("resultSubject").value="";
+document.getElementById("resultMarks").value="";
+
+}
+
+function loadResults(){
+
+let results=JSON.parse(localStorage.getItem("results")||"[]");
+
+let table=document.getElementById("resultTable");
+
+table.innerHTML="";
+
+results.forEach(function(r,index){
+
+table.innerHTML+=`
+<tr>
+<td>${r.id}</td>
+<td>${r.name}</td>
+<td>${r.subject}</td>
+<td>${r.marks}</td>
+<td>${r.grade}</td>
+<td>
+<button onclick="deleteResult(${index})">Delete</button>
+</td>
+</tr>
+`;
+
+});
+
+document.getElementById("resultCount").innerHTML=results.length;
+
+}
+
+function deleteResult(index){
+
+let results=JSON.parse(localStorage.getItem("results")||"[]");
+
+results.splice(index,1);
+
+localStorage.setItem("results",JSON.stringify(results));
+
+loadResults();
+
+}
+
+function searchResults(){
+
+let keyword=document.getElementById("resultSearch").value.toLowerCase();
+
+document.querySelectorAll("#resultTable tr").forEach(function(row){
+
+row.style.display=row.innerText.toLowerCase().includes(keyword)
+? ""
+: "none";
+
+});
+
+}
+
+window.addEventListener("load",loadResults);
+
+</script>
+
+<!-- ================= END PART 5 ================= -->
+<!-- ================= PART 6 ================= -->
+
+<div id="fees" class="page">
+
+<div class="card">
+
+<h2>💰 School Fees Management</h2>
+
+<input type="text" id="feeStudentId" placeholder="Student ID">
+
+<input type="text" id="feeStudentName" placeholder="Student Name">
+
+<select id="feeTerm">
+<option value="">Select Term</option>
+<option>Term 1</option>
+<option>Term 2</option>
+<option>Term 3</option>
+</select>
+
+<input type="number" id="feeAmount" placeholder="Amount (MWK)">
+
+<select id="feeStatus">
+<option>Paid</option>
+<option>Partial</option>
+<option>Unpaid</option>
+</select>
+
+<button class="action-btn" onclick="saveFee()">
+💾 Save Fee
+</button>
+
+<hr>
+
+<input type="text" id="feeSearch"
+placeholder="Search Student..."
+onkeyup="searchFees()">
+
+<table>
+
+<thead>
+
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Term</th>
+<th>Amount</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="feeTable"></tbody>
+
+</table>
+
+<h3>Total Fees: <span id="feeTotal">MWK 0</span></h3>
+
+</div>
+
+</div>
+
+<script>
+
+function saveFee(){
+
+let id=document.getElementById("feeStudentId").value.trim();
+let name=document.getElementById("feeStudentName").value.trim();
+let term=document.getElementById("feeTerm").value;
+let amount=document.getElementById("feeAmount").value;
+let status=document.getElementById("feeStatus").value;
+
+if(id==""||name==""||term==""||amount==""){
+alert("Fill all fields");
+return;
+}
+
+let fees=JSON.parse(localStorage.getItem("fees")||"[]");
+
+fees.push({
+id:id,
+name:name,
+term:term,
+amount:Number(amount),
+status:status
+});
+
+localStorage.setItem("fees",JSON.stringify(fees));
+
+loadFees();
+
+document.getElementById("feeStudentId").value="";
+document.getElementById("feeStudentName").value="";
+document.getElementById("feeTerm").value="";
+document.getElementById("feeAmount").value="";
+
+}
+
+function loadFees(){
+
+let fees=JSON.parse(localStorage.getItem("fees")||"[]");
+
+let table=document.getElementById("feeTable");
+
+table.innerHTML="";
+
+let total=0;
+
+fees.forEach(function(f,index){
+
+total+=Number(f.amount);
+
+table.innerHTML+=`
+<tr>
+<td>${f.id}</td>
+<td>${f.name}</td>
+<td>${f.term}</td>
+<td>MWK ${f.amount}</td>
+<td>${f.status}</td>
+<td>
+<button onclick="deleteFee(${index})">Delete</button>
+</td>
+</tr>
+`;
+
+});
+
+document.getElementById("feeTotal").innerHTML="MWK "+total;
+
+}
+
+function deleteFee(index){
+
+let fees=JSON.parse(localStorage.getItem("fees")||"[]");
+
+fees.splice(index,1);
+
+localStorage.setItem("fees",JSON.stringify(fees));
+
+loadFees();
+
+}
+
+function searchFees(){
+
+let keyword=document.getElementById("feeSearch").value.toLowerCase();
+
+document.querySelectorAll("#feeTable tr").forEach(function(row){
+
+row.style.display=row.innerText.toLowerCase().includes(keyword)
+? ""
+: "none";
+
+});
+
+}
+
+window.addEventListener("load",loadFees);
+
+</script>
+
+<!-- ================= END PART 6 ================= -->
+<!-- ================= PART 7 ================= -->
+
+<div id="library" class="page">
+
+<div class="card">
+
+<h2>📚 Library Management</h2>
+
+<input type="text" id="bookId" placeholder="Book ID">
+
+<input type="text" id="bookTitle" placeholder="Book Title">
+
+<input type="text" id="bookAuthor" placeholder="Author">
+
+<button class="action-btn" onclick="addBook()">
+➕ Add Book
+</button>
+
+<hr>
+
+<input type="text"
+id="librarySearch"
+placeholder="Search Book..."
+onkeyup="searchBooks()">
+
+<table>
+
+<thead>
+<tr>
+<th>ID</th>
+<th>Title</th>
+<th>Author</th>
+<th>Status</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="libraryTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+function addBook(){
+
+let id=document.getElementById("bookId").value.trim();
+let title=document.getElementById("bookTitle").value.trim();
+let author=document.getElementById("bookAuthor").value.trim();
+
+if(id==""||title==""||author==""){
+alert("Fill all fields");
+return;
+}
+
+let books=JSON.parse(localStorage.getItem("books")||"[]");
+
+books.push({
+id:id,
+title:title,
+author:author,
+status:"Available"
+});
+
+localStorage.setItem("books",JSON.stringify(books));
+
+loadBooks();
+
+document.getElementById("bookId").value="";
+document.getElementById("bookTitle").value="";
+document.getElementById("bookAuthor").value="";
+
+}
+
+function loadBooks(){
+
+let books=JSON.parse(localStorage.getItem("books")||"[]");
+
+let table=document.getElementById("libraryTable");
+
+table.innerHTML="";
+
+books.forEach(function(book,index){
+
+table.innerHTML+=`
+
+<tr>
+
+<td>${book.id}</td>
+
+<td>${book.title}</td>
+
+<td>${book.author}</td>
+
+<td>${book.status}</td>
+
+<td>
+
+<button onclick="borrowBook(${index})">
+Borrow
+</button>
+
+<button onclick="returnBook(${index})">
+Return
+</button>
+
+<button onclick="deleteBook(${index})">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+function borrowBook(index){
+
+let books=JSON.parse(localStorage.getItem("books")||"[]");
+
+books[index].status="Borrowed";
+
+localStorage.setItem("books",JSON.stringify(books));
+
+loadBooks();
+
+}
+
+function returnBook(index){
+
+let books=JSON.parse(localStorage.getItem("books")||"[]");
+
+books[index]
+  function addBook(){
+
+let id=document.getElementById("bookId").value.trim();
+let title=document.getElementById("bookTitle").value.trim();
+let author=document.getElementById("bookAuthor").value.trim();
+
+if(id==""||title==""||author==""){
+alert("Fill all fields");
+return;
+}
+
+let books=JSON.parse(localStorage.getItem("books")||"[]");
+
+books.push({
+id:id,
+title:title,
+author:author,
+status:"Available"
+});
+
+localStorage.setItem("books",JSON.stringify(books));
+
+loadBooks();
+
+document.getElementById("bookId").value="";
+document.getElementById("bookTitle").value="";
+document.getElementById("bookAuthor").value="";
+
+}
+
+function loadBooks(){
+
+let books=JSON.parse(localStorage.getItem("books")||"[]");
+
+let table=document.getElementById("libraryTable");
+
+table.innerHTML="";
+
+books.forEach(function(book,index){
+
+table.innerHTML+=`
+
+<tr>
+
+<td>${book.id}</td>
+
+<td>${book.title}</td>
+
+<td>${book.author}</td>
+
+<td>${book.status}</td>
+
+<td>
+
+<button onclick="borrowBook(${index})">
+Borrow
+</button>
+
+<button onclick="returnBook(${index})">
+Return
+</button>
+
+<button onclick="deleteBook(${index})">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+function borrowBook(index){
+
+let books=JSON.parse(localStorage.getItem("books")||"[]");
+
+books[index].status="Borrowed";
+
+localStorage.setItem("books",JSON.stringify(books));
+
+loadBooks();
+
+}
+
+function returnBook(index){
+
+let books=JSON.parse(localStorage.getItem("books")||"[]");
+
+books[index].status="Available";
+
+localStorage.setItem("books",JSON.stringify(books));
+
+loadBooks();
+
+}
+
+function deleteBook(index){
+
+let books=JSON.parse(localStorage.getItem("books")||"[]");
+
+books.splice(index,1);
+
+localStorage.setItem("books",JSON.stringify(books));
+
+loadBooks();
+
+}
+
+function searchBooks(){
+
+let keyword=document.getElementById("librarySearch").value.toLowerCase();
+
+document.querySelectorAll("#libraryTable tr").forEach(function(row){
+
+row.style.display=row.innerText.toLowerCase().includes(keyword)
+? ""
+: "none";
+
+});
+
+}
+
+window.addEventListener("load",loadBooks);
+
+</script>
+
+<!-- ================= END PART 7 ================= -->
+<!-- ================= PART 8 ================= -->
+
+<div id="attendance" class="page">
+
+<div class="card">
+
+<h2>📝 Attendance Management</h2>
+
+<input type="text" id="attendanceId" placeholder="Student ID">
+
+<input type="text" id="attendanceName" placeholder="Student Name">
+
+<select id="attendanceStatus">
+<option value="Present">Present</option>
+<option value="Absent">Absent</option>
+<option value="Late">Late</option>
+</select>
+
+<button class="action-btn" onclick="saveAttendance()">
+✔ Save Attendance
+</button>
+
+<hr>
+
+<input type="text"
+id="attendanceSearch"
+placeholder="Search Student..."
+onkeyup="searchAttendance()">
+
+<table>
+
+<thead>
+
+<tr>
+<th>ID</th>
+<th>Name</th>
+<th>Status</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="attendanceTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+function saveAttendance(){
+
+let id=document.getElementById("attendanceId").value.trim();
+let name=document.getElementById("attendanceName").value.trim();
+let status=document.getElementById("attendanceStatus").value;
+
+if(id==""||name==""){
+alert("Fill all fields");
+return;
+}
+
+let attendance=JSON.parse(localStorage.getItem("attendance")||"[]");
+
+attendance.push({
+id:id,
+name:name,
+status:status,
+date:new Date().toLocaleDateString()
+});
+
+localStorage.setItem("attendance",JSON.stringify(attendance));
+
+loadAttendance();
+
+document.getElementById("attendanceId").value="";
+document.getElementById("attendanceName").value="";
+document.getElementById("attendanceStatus").value="Present";
+
+}
+
+function loadAttendance(){
+
+let attendance=JSON.parse(localStorage.getItem("attendance")||"[]");
+
+let table=document.getElementById("attendanceTable");
+
+table.innerHTML="";
+
+attendance.forEach(function(a,index){
+
+table.innerHTML+=`
+
+<tr>
+
+<td>${a.id}</td>
+
+<td>${a.name}</td>
+
+<td>${a.status}</td>
+
+<td>${a.date}</td>
+
+<td>
+
+<button onclick="deleteAttendance(${index})">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+function deleteAttendance(index){
+
+let attendance=JSON.parse(localStorage.getItem("attendance")||"[]");
+
+attendance.splice(index,1);
+
+localStorage.setItem("attendance",JSON.stringify(attendance));
+
+loadAttendance();
+
+}
+
+function searchAttendance(){
+
+let keyword=document.getElementById("attendanceSearch").value.toLowerCase();
+
+document.querySelectorAll("#attendanceTable tr").forEach(function(row){
+
+row.style.display=row.innerText.toLowerCase().includes(keyword)
+? ""
+: "none";
+
+});
+
+}
+
+window.addEventListener("load",loadAttendance);
+
+</script>
+
+<!-- ================= END PART 8 ================= -->
+<!-- ================= PART 9 ================= -->
+
+<div id="alerts" class="page">
+
+<div class="card">
+
+<h2>🔔 Student Alerts & Notifications</h2>
+
+<input type="text" id="alertTitle" placeholder="Alert Title">
+
+<textarea id="alertMessage" placeholder="Write alert message..."></textarea>
+
+<select id="alertPriority">
+<option>Normal</option>
+<option>Important</option>
+<option>Emergency</option>
+</select>
+
+<button class="action-btn" onclick="saveAlert()">
+📢 Send Alert
+</button>
+
+<hr>
+
+<input
+type="text"
+id="alertSearch"
+placeholder="Search Alert..."
+onkeyup="searchAlerts()">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Title</th>
+<th>Message</th>
+<th>Priority</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="alertTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+function saveAlert(){
+
+let title=document.getElementById("alertTitle").value.trim();
+let message=document.getElementById("alertMessage").value.trim();
+let priority=document.getElementById("alertPriority").value;
+
+if(title==""||message==""){
+alert("Please complete all fields.");
+return;
+}
+
+let alerts=JSON.parse(localStorage.getItem("alerts")||"[]");
+
+alerts.unshift({
+title:title,
+message:message,
+priority:priority,
+date:new Date().toLocaleString()
+});
+
+localStorage.setItem("alerts",JSON.stringify(alerts));
+
+loadAlerts();
+
+document.getElementById("alertTitle").value="";
+document.getElementById("alertMessage").value="";
+document.getElementById("alertPriority").value="Normal";
+
+}
+
+function loadAlerts(){
+
+let alerts=JSON.parse(localStorage.getItem("alerts")||"[]");
+
+let table=document.getElementById("alertTable");
+
+table.innerHTML="";
+
+alerts.forEach(function(a,index){
+
+table.innerHTML+=`
+
+<tr>
+
+<td>${a.title}</td>
+
+<td>${a.message}</td>
+
+<td>${a.priority}</td>
+
+<td>${a.date}</td>
+
+<td>
+
+<button onclick="deleteAlert(${index})">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+function deleteAlert(index){
+
+let alerts=JSON.parse(localStorage.getItem("alerts")||"[]");
+
+alerts.splice(index,1);
+
+localStorage.setItem("alerts",JSON.stringify(alerts));
+
+loadAlerts();
+
+}
+
+function searchAlerts(){
+
+let keyword=document.getElementById("alertSearch").value.toLowerCase();
+
+document.querySelectorAll("#alertTable tr").forEach(function(row){
+
+row.style.display=row.innerText.toLowerCase().includes(keyword)
+? ""
+: "none";
+
+});
+
+}
+
+window.addEventListener("load",loadAlerts);
+
+</script>
+
+<!-- ================= END PART 9 ================= -->
+<!-- ================= PART 10 ================= -->
+
+<div id="profile" class="page">
+
+<div class="card">
+
+<h2>👤 My Profile</h2>
+
+<center>
+<img id="profilePhoto"
+src="https://via.placeholder.com/120"
+style="width:120px;height:120px;border-radius:50%;border:3px solid #0A64AD;">
+</center>
+
+<br>
+
+<label>Upload Photo</label>
+
+<input type="file"
+id="photoInput"
+accept="image/*"
+onchange="uploadPhoto(event)">
+
+<br><br>
+
+<input type="text"
+id="profileName"
+placeholder="Full Name">
+
+<input type="email"
+id="profileEmail"
+placeholder="Email Address">
+
+<input type="text"
+id="profilePhone"
+placeholder="Phone Number">
+
+<button class="action-btn"
+onclick="saveProfile()">
+💾 Save Profile
+</button>
+
+<hr>
+
+<h3>🔒 Change Password</h3>
+
+<input type="password"
+id="oldPassword"
+placeholder="Old Password">
+
+<input type="password"
+id="newPassword"
+placeholder="New Password">
+
+<button class="action-btn"
+onclick="changePassword()">
+Change Password
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+function uploadPhoto(event){
+
+const file=event.target.files[0];
+
+if(!file)return;
+
+const reader=new FileReader();
+
+reader.onload=function(e){
+
+document.getElementById("profilePhoto").src=e.target.result;
+
+localStorage.setItem("profilePhoto",e.target.result);
+
+}
+
+reader.readAsDataURL(file);
+
+}
+
+function saveProfile(){
+
+const profile={
+
+name:document.getElementById("profileName").value,
+
+email:document.getElementById("profileEmail").value,
+
+phone:document.getElementById("profilePhone").value
+
+};
+
+localStorage.setItem("profile",JSON.stringify(profile));
+
+alert("Profile Saved Successfully");
+
+}
+
+function loadProfile(){
+
+const profile=JSON.parse(localStorage.getItem("profile")||"{}");
+
+document.getElementById("profileName").value=profile.name||"";
+
+document.getElementById("profileEmail").value=profile.email||"";
+
+document.getElementById("profilePhone").value=profile.phone||"";
+
+const photo=localStorage.getItem("profilePhoto");
+
+if(photo){
+
+document.getElementById("profilePhoto").src=photo;
+
+}
+
+}
+
+function changePassword(){
+
+let oldPass=document.getElementById("oldPassword").value;
+
+let newPass=document.getElementById("newPassword").value;
+
+if(oldPass==="1234"){
+
+localStorage.setItem("password",newPass);
+
+alert("Password Changed Successfully");
+
+}else{
+
+alert("Old Password is Incorrect");
+
+}
+
+}
+
+window.addEventListener("load",loadProfile);
+
+</script>
+
+<!-- ================= END PART 10 ================= -->
+<!-- ================= PART 11 ================= -->
+
+<div id="admin" class="page">
+
+<div class="card">
+
+<h2>📊 Admin Dashboard</h2>
+
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:15px;">
+
+<div class="card">
+<h3>👨‍🎓 Students</h3>
+<h1 id="dashStudents">0</h1>
+</div>
+
+<div class="card">
+<h3>👨‍🏫 Teachers</h3>
+<h1 id="dashTeachers">0</h1>
+</div>
+
+<div class="card">
+<h3>📚 Books</h3>
+<h1 id="dashBooks">0</h1>
+</div>
+
+<div class="card">
+<h3>📊 Results</h3>
+<h1 id="dashResults">0</h1>
+</div>
+
+<div class="card">
+<h3>💰 Fees Records</h3>
+<h1 id="dashFees">0</h1>
+</div>
+
+<div class="card">
+<h3>📝 Attendance</h3>
+<h1 id="dashAttendance">0</h1>
+</div>
+
+</div>
+
+<br>
+
+<button class="action-btn" onclick="refreshDashboard()">
+🔄 Refresh Dashboard
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+function refreshDashboard(){
+
+let students=JSON.parse(localStorage.getItem("students")||"[]");
+let teachers=JSON.parse(localStorage.getItem("teachers")||"[]");
+let books=JSON.parse(localStorage.getItem("books")||"[]");
+let results=JSON.parse(localStorage.getItem("results")||"[]");
+let fees=JSON.parse(localStorage.getItem("fees")||"[]");
+let attendance=JSON.parse(localStorage.getItem("attendance")||"[]");
+
+document.getElementById("dashStudents").innerHTML=students.length;
+document.getElementById("dashTeachers").innerHTML=teachers.length;
+document.getElementById("dashBooks").innerHTML=books.length;
+document.getElementById("dashResults").innerHTML=results.length;
+document.getElementById("dashFees").innerHTML=fees.length;
+document.getElementById("dashAttendance").innerHTML=attendance.length;
+
+}
+
+window.addEventListener("load",refreshDashboard);
+
+</script>
+
+<!-- ================= END PART 11 ================= -->
+<!-- ================= PART 12 ================= -->
+
+<div id="documents" class="page">
+
+<div class="card">
+
+<h2>📁 School Documents</h2>
+
+<input type="text" id="docTitle" placeholder="Document Title">
+
+<input type="file" id="docFile"
+accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+
+<button class="action-btn" onclick="uploadDocument()">
+📤 Upload Document
+</button>
+
+<hr>
+
+<input type="text"
+id="docSearch"
+placeholder="Search Document..."
+onkeyup="searchDocuments()">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Title</th>
+<th>File Name</th>
+<th>Download</th>
+<th>Delete</th>
+</tr>
+
+</thead>
+
+<tbody id="documentTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+function uploadDocument(){
+
+const title=document.getElementById("docTitle").value.trim();
+const file=document.getElementById("docFile").files[0];
+
+if(title===""||!file){
+
+alert("Please enter title and choose file");
+
+return;
+
+}
+
+const reader=new FileReader();
+
+reader.onload=function(e){
+
+let docs=JSON.parse(localStorage.getItem("documents")||"[]");
+
+docs.push({
+
+title:title,
+
+name:file.name,
+
+data:e.target.result
+
+});
+
+localStorage.setItem("documents",JSON.stringify(docs));
+
+loadDocuments();
+
+document.getElementById("docTitle").value="";
+document.getElementById("docFile").value="";
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+function loadDocuments(){
+
+let docs=JSON.parse(localStorage.getItem("documents")||"[]");
+
+let table=document.getElementById("documentTable");
+
+table.innerHTML="";
+
+docs.forEach(function(doc,index){
+
+table.innerHTML+=`
+
+<tr>
+
+<td>${doc.title}</td>
+
+<td>${doc.name}</td>
+
+<td>
+
+<a href="${doc.data}" download="${doc.name}">
+Download
+</a>
+
+</td>
+
+<td>
+
+<button onclick="deleteDocument(${index})">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+function deleteDocument(index){
+
+let docs=JSON.parse(localStorage.getItem("documents")||"[]");
+
+docs.splice(index,1);
+
+localStorage.setItem("documents",JSON.stringify(docs));
+
+loadDocuments();
+
+}
+
+function searchDocuments(){
+
+let keyword=document.getElementById("docSearch").value.toLowerCase();
+
+document.querySelectorAll("#documentTable tr").forEach(function(row){
+
+row.style.display=row.innerText.toLowerCase().includes(keyword)
+? ""
+: "none";
+
+});
+
+}
+
+window.addEventListener("load",loadDocuments);
+
+</script>
+
+<!-- ================= END PART 12 ================= -->
+<!-- ================= PART 13 ================= -->
+
+<div id="backup" class="page">
+
+<div class="card">
+
+<h2>💾 Backup & Restore</h2>
+
+<p>Create a backup of all system data or restore a previous backup.</p>
+
+<button class="action-btn" onclick="backupData()">
+⬇ Download Backup
+</button>
+
+<br><br>
+
+<input type="file" id="restoreFile" accept=".json">
+
+<button class="action-btn" onclick="restoreData()">
+⬆ Restore Backup
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+function backupData(){
+
+const data={
+
+students:JSON.parse(localStorage.getItem("students")||"[]"),
+teachers:JSON.parse(localStorage.getItem("teachers")||"[]"),
+results:JSON.parse(localStorage.getItem("results")||"[]"),
+fees:JSON.parse(localStorage.getItem("fees")||"[]"),
+books:JSON.parse(localStorage.getItem("books")||"[]"),
+attendance:JSON.parse(localStorage.getItem("attendance")||"[]"),
+alerts:JSON.parse(localStorage.getItem("alerts")||"[]"),
+documents:JSON.parse(localStorage.getItem("documents")||"[]"),
+profile:JSON.parse(localStorage.getItem("profile")||"{}")
+
+};
+
+const blob=new Blob(
+[JSON.stringify(data,null,2)],
+{type:"application/json"}
+);
+
+const link=document.createElement("a");
+
+link.href=URL.createObjectURL(blob);
+
+link.download="School_Backup.json";
+
+link.click();
+
+}
+
+function restoreData(){
+
+const file=document.getElementById("restoreFile").files[0];
+
+if(!file){
+
+alert("Please select backup file");
+
+return;
+
+}
+
+const reader=new FileReader();
+
+reader.onload=function(e){
+
+const data=JSON.parse(e.target.result);
+
+localStorage.setItem("students",JSON.stringify(data.students||[]));
+localStorage.setItem("teachers",JSON.stringify(data.teachers||[]));
+localStorage.setItem("results",JSON.stringify(data.results||[]));
+localStorage.setItem("fees",JSON.stringify(data.fees||[]));
+localStorage.setItem("books",JSON.stringify(data.books||[]));
+localStorage.setItem("attendance",JSON.stringify(data.attendance||[]));
+localStorage.setItem("alerts",JSON.stringify(data.alerts||[]));
+localStorage.setItem("documents",JSON.stringify(data.documents||[]));
+localStorage.setItem("profile",JSON.stringify(data.profile||{}));
+
+alert("Backup Restored Successfully");
+
+location.reload();
+
+};
+
+reader.readAsText(file);
+
+}
+
+</script>
+
+<!-- ================= END PART 13 ================= -->
+<!-- ================= PART 14 ================= -->
+
+<!-- Firebase SDK -->
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getAuth,
+signInWithEmailAndPassword,
+createUserWithEmailAndPassword,
+signOut
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+import {
+getStorage,
+ref,
+uploadBytes,
+getDownloadURL
+} from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const firebaseConfig={
+
+apiKey:"YOUR_API_KEY",
+
+authDomain:"YOUR_PROJECT.firebaseapp.com",
+
+projectId:"YOUR_PROJECT_ID",
+
+storageBucket:"YOUR_PROJECT.appspot.com",
+
+messagingSenderId:"YOUR_SENDER_ID",
+
+appId:"YOUR_APP_ID"
+
+};
+
+const app=initializeApp(firebaseConfig);
+
+const auth=getAuth(app);
+
+const db=getFirestore(app);
+
+const storage=getStorage(app);
+
+// LOGIN
+
+async function firebaseLogin(){
+
+const email=document.getElementById("username").value;
+
+const password=document.getElementById("password").value;
+
+try{
+
+await signInWithEmailAndPassword(auth,email,password);
+
+alert("Login Successful");
+
+showPage("dashboard");
+
+}catch(e){
+
+alert(e.message);
+
+}
+
+}
+
+// REGISTER
+
+async function firebaseRegister(){
+
+const email=document.getElementById("username").value;
+
+const password=document.getElementById("password").value;
+
+try{
+
+await createUserWithEmailAndPassword(auth,email,password);
+
+alert("Account Created");
+
+}catch(e){
+
+alert(e.message);
+
+}
+
+}
+
+// LOGOUT
+
+async function firebaseLogout(){
+
+await signOut(auth);
+
+alert("Logged Out");
+
+showPage("login");
+
+}
+
+// SAVE STUDENT
+
+async function saveStudentFirebase(student){
+
+await addDoc(collection(db,"students"),student);
+
+}
+
+// LOAD STUDENTS
+
+async function loadStudentsFirebase(){
+
+const snapshot=await getDocs(collection(db,"students"));
+
+snapshot.forEach(doc=>{
+
+console.log(doc.id,doc.data());
+
+});
+
+}
+
+// UPLOAD FILE
+
+async function uploadFile(file){
+
+const storageRef=ref(storage,"documents/"+file.name);
+
+await uploadBytes(storageRef,file);
+
+const url=await getDownloadURL(storageRef);
+
+return url;
+
+}
+
+window.firebaseLogin=firebaseLogin;
+window.firebaseRegister=firebaseRegister;
+window.firebaseLogout=firebaseLogout;
+window.saveStudentFirebase=saveStudentFirebase;
+window.loadStudentsFirebase=loadStudentsFirebase;
+window.uploadFile=uploadFile;
+
+</script>
+
+<!-- ================= END PART 14 ================= -->
+<!-- ================= PART 15 ================= -->
+
+<div id="adminPanel" class="page">
+
+<div class="card">
+
+<h2>⚙️ Admin Panel</h2>
+
+<input type="text" id="adminName" placeholder="Full Name">
+
+<input type="email" id="adminEmail" placeholder="Email">
+
+<select id="adminRole">
+<option>Administrator</option>
+<option>Teacher</option>
+<option>Accountant</option>
+<option>Librarian</option>
+<option>Student</option>
+</select>
+
+<button class="action-btn" onclick="addUser()">
+➕ Add User
+</button>
+
+<hr>
+
+<table>
+
+<thead>
+
+<tr>
+
+<th>Name</th>
+
+<th>Email</th>
+
+<th>Role</th>
+
+<th>Permission</th>
+
+<th>Action</th>
+
+</tr>
+
+</thead>
+
+<tbody id="adminTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+function addUser(){
+
+let name=document.getElementById("adminName").value.trim();
+
+let email=document.getElementById("adminEmail").value.trim();
+
+let role=document.getElementById("adminRole").value;
+
+if(name==""||email==""){
+
+alert("Fill all fields");
+
+return;
+
+}
+
+let users=JSON.parse(localStorage.getItem("users")||"[]");
+
+users.push({
+
+name:name,
+
+email:email,
+
+role:role,
+
+permission:"Granted"
+
+});
+
+localStorage.setItem("users",JSON.stringify(users));
+
+loadUsers();
+
+document.getElementById("adminName").value="";
+
+document.getElementById("adminEmail").value="";
+
+}
+
+function loadUsers(){
+
+let users=JSON.parse(localStorage.getItem("users")||"[]");
+
+let table=document.getElementById("adminTable");
+
+table.innerHTML="";
+
+users.forEach(function(user,index){
+
+table.innerHTML+=`
+
+<tr>
+
+<td>${user.name}</td>
+
+<td>${user.email}</td>
+
+<td>${user.role}</td>
+
+<td>${user.permission}</td>
+
+<td>
+
+<button onclick="deleteUser(${index})">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+function deleteUser(index){
+
+let users=JSON.parse(localStorage.getItem("users")||"[]");
+
+users.splice(index,1);
+
+localStorage.setItem("users",JSON.st
+                     window.addEventListener("load",loadUsers);
+
+</script>
+
+<!-- ================= END PART 15 ================= -->
+<!-- ================= PART 16 ================= -->
+
+<div id="settings" class="page">
+
+<div class="card">
+
+<h2>⚙️ School Settings</h2>
+
+<label>School Name</label>
+<input type="text" id="schoolName" placeholder="Enter School Name">
+
+<label>School Motto</label>
+<input type="text" id="schoolMotto" placeholder="School Motto">
+
+<label>Phone Number</label>
+<input type="text" id="schoolPhone" placeholder="Phone">
+
+<label>Email</label>
+<input type="email" id="schoolEmail" placeholder="Email">
+
+<label>Address</label>
+<textarea id="schoolAddress" placeholder="School Address"></textarea>
+
+<label>School Logo</label>
+<input type="file" id="schoolLogo" accept="image/*">
+
+<br><br>
+
+<button class="action-btn" onclick="saveSettings()">
+💾 Save Settings
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+function saveSettings(){
+
+const logo=document.getElementById("schoolLogo").files[0];
+
+const settings={
+
+name:document.getElementById("schoolName").value,
+
+motto:document.getElementById("schoolMotto").value,
+
+phone:document.getElementById("schoolPhone").value,
+
+email:document.getElementById("schoolEmail").value,
+
+address:document.getElementById("schoolAddress").value
+
+};
+
+if(logo){
+
+const reader=new FileReader();
+
+reader.onload=function(e){
+
+settings.logo=e.target.result;
+
+localStorage.setItem("schoolSettings",JSON.stringify(settings));
+
+alert("Settings Saved Successfully");
+
+};
+
+reader.readAsDataURL(logo);
+
+}else{
+
+let old=JSON.parse(localStorage.getItem("schoolSettings")||"{}");
+
+settings.logo=old.logo||"";
+
+localStorage.setItem("schoolSettings",JSON.stringify(settings));
+
+alert("Settings Saved Successfully");
+
+}
+
+}
+
+function loadSettings(){
+
+let settings=JSON.parse(localStorage.getItem("schoolSettings")||"{}");
+
+document.getElementById("schoolName").value=settings.name||"";
+
+document.getElementById("schoolMotto").value=settings.motto||"";
+
+document.getElementById("schoolPhone").value=settings.phone||"";
+
+document.getElementById("schoolEmail").value=settings.email||"";
+
+document.getElementById("schoolAddress").value=settings.address||"";
+
+}
+
+window.addEventListener("load",loadSettings);
+
+</script>
+
+<!-- ================= END PART 16 ================= -->
+<!-- ================= PART 17 ================= -->
+
+<div id="reports" class="page">
+
+<div class="card">
+
+<h2>📄 Student Report Card</h2>
+
+<input type="text" id="reportStudentId" placeholder="Student ID">
+
+<button class="action-btn" onclick="generateReport()">
+Generate Report
+</button>
+
+<hr>
+
+<div id="reportCard" style="display:none;border:2px solid #000;padding:20px;background:#fff;">
+
+<h2 style="text-align:center;">🏫 School Management System</h2>
+
+<h3 style="text-align:center;">Student Report Card</h3>
+
+<p><b>Student ID:</b> <span id="rId"></span></p>
+
+<p><b>Name:</b> <span id="rName"></span></p>
+
+<table border="1" width="100%" cellspacing="0">
+
+<thead>
+
+<tr>
+
+<th>Subject</th>
+
+<th>Marks</th>
+
+<th>Grade</th>
+
+</tr>
+
+</thead>
+
+<tbody id="reportTable"></tbody>
+
+</table>
+
+<br>
+
+<h3>Total Marks:
+<span id="totalMarks">0</span>
+</h3>
+
+<h3>Average:
+<span id="averageMarks">0</span>
+</h3>
+
+<button onclick="window.print()">
+🖨 Print Report
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+<script>
+
+function generateReport(){
+
+let studentId=document.getElementById("reportStudentId").value.trim();
+
+let results=JSON.parse(localStorage.getItem("results")||"[]");
+
+let table=document.getElementById("reportTable");
+
+table.innerHTML="";
+
+let total=0;
+
+let count=0;
+
+let studentName="";
+
+results.forEach(function(r){
+
+if(r.id===studentId){
+
+studentName=r.name;
+
+table.innerHTML+=`
+<tr>
+<td>${r.subject}</td>
+<td>${r.marks}</td>
+<td>${r.grade}</td>
+</tr>
+`;
+
+total+=Number(r.marks);
+
+count++;
+
+}
+
+});
+
+if(count===0){
+
+alert("Student results not found");
+
+return;
+
+}
+
+document.getElementById("rId").innerHTML=studentId;
+
+document.getElementById("rName").innerHTML=studentName;
+
+document.getElementById("totalMarks").innerHTML=total;
+
+document.getElementById("averageMarks").innerHTML=(total/count).toFixed(2);
+
+document.getElementById("reportCard").style.display="block";
+
+}
+
+</script>
+
+<!-- ================= END PART 17 ================= -->
+<!-- ================= PART 18 ================= -->
+
+<div id="timetable" class="page">
+
+<div class="card">
+
+<h2>🗓️ School Timetable</h2>
+
+<input type="text" id="ttClass" placeholder="Class">
+
+<input type="text" id="ttSubject" placeholder="Subject">
+
+<input type="text" id="ttTeacher" placeholder="Teacher">
+
+<input type="text" id="ttDay" placeholder="Day (e.g. Monday)">
+
+<input type="text" id="ttTime" placeholder="Time (e.g. 08:00 - 09:00)">
+
+<button class="action-btn" onclick="saveTimetable()">
+💾 Save Timetable
+</button>
+
+<hr>
+
+<input type="text"
+id="ttSearch"
+placeholder="Search..."
+onkeyup="searchTimetable()">
+
+<table>
+
+<thead>
+
+<tr>
+<th>Class</th>
+<th>Subject</th>
+<th>Teacher</th>
+<th>Day</th>
+<th>Time</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="timetableTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+function saveTimetable(){
+
+const cls=document.getElementById("ttClass").value.trim();
+const subject=document.getElementById("ttSubject").value.trim();
+const teacher=document.getElementById("ttTeacher").value.trim();
+const day=document.getElementById("ttDay").value.trim();
+const time=document.getElementById("ttTime").value.trim();
+
+if(!cls||!subject||!teacher||!day||!time){
+
+alert("Please fill all fields");
+return;
+
+}
+
+let timetable=JSON.parse(localStorage.getItem("timetable")||"[]");
+
+timetable.push({
+class:cls,
+subject:subject,
+teacher:teacher,
+day:day,
+time:time
+});
+
+localStorage.setItem("timetable",JSON.stringify(timetable));
+
+loadTimetable();
+
+document.getElementById("ttClass").value="";
+document.getElementById("ttSubject").value="";
+document.getElementById("ttTeacher").value="";
+document.getElementById("ttDay").value="";
+document.getElementById("ttTime").value="";
+
+}
+
+function loadTimetable(){
+
+let timetable=JSON.parse(localStorage.getItem("timetable")||"[]");
+
+let table=document.getElementById("timetableTable");
+
+table.innerHTML="";
+
+timetable.forEach(function(item,index){
+
+table.innerHTML+=`
+<tr>
+<td>${item.class}</td>
+<td>${item.subject}</td>
+<td>${item.teacher}</td>
+<td>${item.day}</td>
+<td>${item.time}</td>
+<td>
+<button onclick="deleteTimetable(${index})">Delete</button>
+</td>
+</tr>
+`;
+
+});
+
+}
+
+function deleteTimetable(index){
+
+let timetable=JSON.parse(localStorage.getItem("timetable")||"[]");
+
+timetable.splice(index,1);
+
+localStorage.setItem("timetable",JSON.stringify(timetable));
+
+loadTimetable();
+
+}
+
+function searchTimetable(){
+
+let keyword=document.getElementById("ttSearch").value.toLowerCase();
+
+document.querySelectorAll("#timetableTable tr").forEach(function(row){
+
+row.style.display=row.innerText.toLowerCase().includes(keyword)
+? ""
+: "none";
+
+});
+
+}
+
+window.addEventListener("load",loadTimetable);
+
+</script>
+
+<!-- ================= END PART 18 ================= -->
+<!-- ================= PART 19 ================= -->
+
+<div id="messages" class="page">
+
+<div class="card">
+
+<h2>📩 Messaging & Communication</h2>
+
+<input type="text" id="msgReceiver" placeholder="Recipient">
+
+<input type="text" id="msgSubject" placeholder="Subject">
+
+<textarea id="msgBody" placeholder="Type your message"></textarea>
+
+<button class="action-btn" onclick="sendMessage()">
+📨 Send Message
+</button>
+
+<hr>
+
+<input type="text"
+id="msgSearch"
+placeholder="Search Message..."
+onkeyup="searchMessages()">
+
+<table>
+
+<thead>
+
+<tr>
+<th>To</th>
+<th>Subject</th>
+<th>Message</th>
+<th>Date</th>
+<th>Action</th>
+</tr>
+
+</thead>
+
+<tbody id="messageTable"></tbody>
+
+</table>
+
+</div>
+
+</div>
+
+<script>
+
+function sendMessage(){
+
+const receiver=document.getElementById("msgReceiver").value.trim();
+const subject=document.getElementById("msgSubject").value.trim();
+const body=document.getElementById("msgBody").value.trim();
+
+if(receiver===""||subject===""||body===""){
+
+alert("Please fill all fields");
+
+return;
+
+}
+
+let messages=JSON.parse(localStorage.getItem("messages")||"[]");
+
+messages.unshift({
+
+receiver:receiver,
+
+subject:subject,
+
+body:body,
+
+date:new Date().toLocaleString()
+
+});
+
+localStorage.setItem("messages",JSON.stringify(messages));
+
+loadMessages();
+
+document.getElementById("msgReceiver").value="";
+document.getElementById("msgSubject").value="";
+document.getElementById("msgBody").value="";
+
+}
+
+function loadMessages(){
+
+let messages=JSON.parse(localStorage.getItem("messages")||"[]");
+
+let table=document.getElementById("messageTable");
+
+table.innerHTML="";
+
+messages.forEach(function(msg,index){
+
+table.innerHTML+=`
+
+<tr>
+
+<td>${msg.receiver}</td>
+
+<td>${msg.subject}</td>
+
+<td>${msg.body}</td>
+
+<td>${msg.date}</td>
+
+<td>
+
+<button onclick="deleteMessage(${index})">
+Delete
+</button>
+
+</td>
+
+</tr>
+
+`;
+
+});
+
+}
+
+function factoryReset() {
+    let confirmReset = confirm("Kodi mukutsimikiza kuti mukufuna Factory Reset? Zonse zisungidwa zidzachotsedwa.");
+
+    if (confirmReset) {
+        // Chotsani data yonse ya Local Storage
+        localStorage.clear();
+
+        // Chotsani Session Storage
+        sessionStorage.clear();
+
+        alert("Factory Reset yatha bwino.");
+
+        // Reload page
+        location.reload();
+    }
+}
+function deleteMessage(index){
+
+let messages=JSON.parse(localStorage.getItem("messages")||"[]");
+
+messages.splice(index,1);
+
+localStorage.setItem("messages",JSON.stringify(messages));
+
+loadMessages();
+
+}
+
+function searchMessages(){
+
+let keyword=document.getElementById("msgSearch").value.toLowerCase();
+
+document.querySelectorAll("#messageTable tr").forEach(function(row){
+
+row.style.display=row.innerText.toLowerCase().includes(keyword)
+? "" : "none";
+
+});
+
+}
+
+window.addEventListener("load",loadMessages);
+
+</script>
+
+<!-- ================= END PART 19 ================= -->
+<!-- ================= PART 20 ================= -->
+
+<script>
+
+// Initialize application
+window.onload = function () {
+
+    if (typeof loadStudents === "function") loadStudents();
+    if (typeof loadTeachers === "function") loadTeachers();
+    if (typeof loadResults === "function") loadResults();
+    if (typeof loadFees === "function") loadFees();
+    if (typeof loadBooks === "function") loadBooks();
+    if (typeof loadAttendance === "function") loadAttendance();
+    if (typeof loadAlerts === "function") loadAlerts();
+    if (typeof loadDocuments === "function") loadDocuments();
+    if (typeof loadUsers === "function") loadUsers();
+    if (typeof loadSettings === "function") loadSettings();
+    if (typeof loadProfile === "function") loadProfile();
+    if (typeof loadTimetable === "function") loadTimetable();
+    if (typeof loadMessages === "function") loadMessages();
+    if (typeof refreshDashboard === "function") refreshDashboard();
+
+    // Hide dashboard until login
+    if (document.getElementById("header"))
+        document.getElementById("header").style.display = "none";
+
+    if (document.getElementById("sidebar"))
+        document.getElementById("sidebar").style.display = "none";
+
+    showPage("login");
+};
+
+</script>
+
+</main>
+
+</body>
+</html>
